@@ -10,5 +10,6 @@ public interface ItemStorage {
     Item getItem(long id);
     Collection<Item> getUserItems(long owner);
     Collection<Item> getAllItems();
+    Collection<Item> searchItem(String text);
     void removeItem(long id);
 }

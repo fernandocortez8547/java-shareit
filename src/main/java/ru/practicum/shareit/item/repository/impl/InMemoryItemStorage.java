@@ -57,10 +57,6 @@ public class InMemoryItemStorage implements ItemStorage {
         return updateItem;
     }
 
-    private boolean isOwner(long itemId, long userId) {
-        return items.get(itemId).getOwner() == userId;
-    }
-
     @Override
     public Item getItem(long itemId) {
         if(!items.containsKey(itemId)) {
@@ -78,6 +74,15 @@ public class InMemoryItemStorage implements ItemStorage {
     @Override
     public Collection<Item> getAllItems() {
         return items.values();
+    }
+
+    @Override
+    public Collection<Item> searchItem(final String text) {
+        return items.values()
+                .stream()
+                .filter(item -> item.getName().toLowerCase().contains(text) ||
+                        item.getDescription().toLowerCase().contains(text))
+                .collect(Collectors.toList());
     }
 
     @Override

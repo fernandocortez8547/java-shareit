@@ -45,6 +45,11 @@ public class ItemController {
         return items.stream().map(itemMapper::getItemDto).collect(Collectors.toList());
     }
 
+    @GetMapping("/search")
+    public Collection<Item> searchItem(@RequestParam("text") String text) {
+        return itemService.search(text);
+    }
+
     @DeleteMapping
     public void removeItem(long id) {
         itemService.removeItem(id);

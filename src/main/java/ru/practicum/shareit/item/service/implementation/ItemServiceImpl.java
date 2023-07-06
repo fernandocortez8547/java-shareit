@@ -46,6 +46,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public Collection<Item> search(String text) {
+        return itemStorage.searchItem(text.toLowerCase());
+    }
+
+    @Override
     public void removeItem(long id) {
         itemStorage.removeItem(id);
     }
