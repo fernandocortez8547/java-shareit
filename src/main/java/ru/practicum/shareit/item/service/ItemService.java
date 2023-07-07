@@ -11,6 +11,6 @@ public interface ItemService {
     Item getItem(long itemId);
     Collection<Item> getUserItems(long userId);
     Collection<Item> getAllItems();
-    Collection<Item> search(String text);
+    Collection<Item> searchItem(String text);
     void removeItem(long id);
 }
