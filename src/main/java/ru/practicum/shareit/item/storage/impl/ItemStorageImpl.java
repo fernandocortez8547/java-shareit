@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Repository
 public class ItemStorageImpl implements ItemStorage {
-    private final static Logger log = (Logger) LoggerFactory.getLogger(ItemStorageImpl.class);
+    private final Logger log = (Logger) LoggerFactory.getLogger(ItemStorageImpl.class);
     private final Map<Long, Item> items = new HashMap<>();
     private long id = 0;
 
@@ -76,7 +76,7 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public Item getItem(long itemId) {
-        if(!items.containsKey(itemId)) {
+        if (!items.containsKey(itemId)) {
             log.warn("Item with id={} not found", itemId);
             throw new ItemNotFoundException("Item with id " + id + " not found.");
         }
@@ -98,7 +98,7 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public void removeItem(long id) {
-        if(!items.containsKey(id)) {
+        if (!items.containsKey(id)) {
             log.warn("Item with id={} not found", id);
             throw new ItemNotFoundException("Item with id " + id + " not found.");
         }

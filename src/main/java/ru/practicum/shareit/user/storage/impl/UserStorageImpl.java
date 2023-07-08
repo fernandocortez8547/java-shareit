@@ -13,7 +13,7 @@ import java.util.*;
 
 @Repository
 public class UserStorageImpl implements UserStorage {
-    public final static Logger log = (Logger) LoggerFactory.getLogger(UserStorageImpl.class);
+    public final Logger log = (Logger) LoggerFactory.getLogger(UserStorageImpl.class);
     private final Map<Long, User> users = new HashMap<>();
     private final Set<String> emailSet = new HashSet<>();
     private long id = 0;
@@ -24,7 +24,7 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public User addUser(User user) {
-        if(emailSet.contains(user.getEmail())) {
+        if (emailSet.contains(user.getEmail())) {
             log.warn("User with email={} exist.", user.getEmail());
             throw new EmailAlreadyExistException("User with email " + user.getEmail() + " is already exist.");
         }

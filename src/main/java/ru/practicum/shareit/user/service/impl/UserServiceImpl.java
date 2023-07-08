@@ -12,6 +12,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
+
     @Override
     public User addUser(User user) {
         return userStorage.addUser(user);
