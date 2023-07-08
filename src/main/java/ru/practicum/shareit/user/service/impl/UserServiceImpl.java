@@ -6,7 +6,6 @@ import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 
-import javax.validation.Valid;
 import java.util.Collection;
 
 @Service

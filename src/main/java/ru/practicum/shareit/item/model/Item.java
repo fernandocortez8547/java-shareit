@@ -13,6 +13,6 @@ public class Item {
     private String name;
     @NotBlank
     private String description;
-    @NotNull(message = "must be filled")
+    @NotNull()
     private Boolean available;
 }

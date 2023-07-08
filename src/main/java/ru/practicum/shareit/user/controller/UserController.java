@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.user.UserMapper;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.model.User;
@@ -22,17 +22,17 @@ public class UserController {
     private final static Logger log = LoggerFactory.getLogger(UserController.class);
 
     @PostMapping
-    public UserDto addUser(@Valid @RequestBody User user) {
+    public UserDto addUser(@Valid @RequestBody UserDto userDto) {
         log.info("Received request: path=/users, http-method=POST");
+        User user = userMapper.getUser(userDto);
         return userMapper.getUserDto(userService.addUser(user));
     }
 
     @PatchMapping("{id}")
-    public UserDto updateUser(@PathVariable long id, @RequestBody User user) {
+    public UserDto updateUser(@PathVariable long id, @RequestBody UserDto userDto) {
         log.info("Received request: path=/users/{}, http-method=PATCH", id);
-        user = userService.updateUser(id, user);
-        System.out.println(user.getId());
-        return userMapper.getUserDto(user);
+        User user = userMapper.getUser(userDto);
+        return userMapper.getUserDto(userService.updateUser(id, user));
     }
 
     @GetMapping("{id}")

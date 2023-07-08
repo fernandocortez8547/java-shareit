@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.ItemMapper;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
@@ -22,14 +22,16 @@ public class ItemController {
     private static final Logger log = LoggerFactory.getLogger(ItemController.class);
 
     @PostMapping
-    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") long userId, @Valid @RequestBody Item item) {
+    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") long userId, @Valid @RequestBody ItemDto itemDto) {
         log.info("Received request: path=/item, http-method=POST");
+        Item item = itemMapper.getItem(userId, itemDto);
         return itemMapper.getItemDto(itemService.addItem(userId, item));
     }
 
     @PatchMapping("{id}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long id, @RequestBody Item item) {
+    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long id, @RequestBody ItemDto itemDto) {
         log.info("Received request: path=/item/" + id + ", http-method=PATCH");
+        Item item = itemMapper.getItem(userId, itemDto);
         return itemMapper.getItemDto(itemService.updateItem(userId, id, item));
     }
 
