@@ -28,25 +28,23 @@ public class UserController {
     }
 
     @PatchMapping("{id}")
-    public UserDto updateUser(@PathVariable long id, @RequestBody UserDto userDto) {
+    public UserDto updateUser(@PathVariable long id, @RequestBody User user) {
         log.info("Received request: path=/users/{}, http-method=PATCH", id);
-        User user = userMapper.getUser(id, userDto);
         user = userService.updateUser(id, user);
+        System.out.println(user.getId());
         return userMapper.getUserDto(user);
     }
 
     @GetMapping("{id}")
     public UserDto getUser(@PathVariable long id) {
         log.info("Received request: path=/users/{}, http-method=GET", id);
-        User user = userService.getUser(id);
-        return userMapper.getUserDto(user);
+        return userMapper.getUserDto(userService.getUser(id));
     }
 
     @GetMapping
     public Collection<UserDto> getUsers() {
         log.info("Received request: path=/users, http-method=GET");
-        Collection<User> users = userService.getUsers();
-        return users.stream()
+        return userService.getUsers().stream()
                 .map(userMapper::getUserDto)
                 .collect(Collectors.toList());
     }

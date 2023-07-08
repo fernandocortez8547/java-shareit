@@ -28,10 +28,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item updateItem(long userId, Item item) {
+    public Item updateItem(long userId, long itemId, Item item) {
         userService.getUser(userId);
         item.setOwner(userId);
-        return itemStorage.updateItem(item);
+        return itemStorage.updateItem(itemId, item);
     }
 
     @Override

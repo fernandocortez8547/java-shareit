@@ -10,7 +10,6 @@ import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.item.exception.IncorrectOwnerException;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,18 +33,19 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public Item updateItem(Item updateItem) {
-        if (!items.containsKey(updateItem.getId())) {
+    public Item updateItem(long itemId, Item updateItem) {
+        if (!items.containsKey(itemId)) {
             log.warn("Item with id={} not found", updateItem.getId());
             throw new ItemNotFoundException("Item with id " + id + " not found.");
         }
 
-        Item item = items.get(updateItem.getId());
+        Item item = items.get(itemId);
         String name = updateItem.getName();
         String description = updateItem.getDescription();
         Boolean available = updateItem.getAvailable();
         long owner = updateItem.getOwner();
         log.debug("available {}",available);
+        updateItem.setId(itemId);
 
         if (item.getOwner() != updateItem.getOwner()) {
             log.debug("Set item owner id to {}.", item.getOwner());

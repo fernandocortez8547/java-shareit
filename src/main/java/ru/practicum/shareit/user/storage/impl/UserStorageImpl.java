@@ -3,7 +3,6 @@ package ru.practicum.shareit.user.storage.impl;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.exception.EmailAlreadyExistException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
@@ -47,6 +46,7 @@ public class UserStorageImpl implements UserStorage {
         User user = users.get(userId);
         String email = updateUser.getEmail();
         String name = updateUser.getName();
+        updateUser.setId(userId);
 
         if (email == null || user.getEmail().equals(email)) {
             log.debug("Set user email to {}.", user.getEmail());
@@ -55,9 +55,9 @@ public class UserStorageImpl implements UserStorage {
             log.warn("User with email={} exist.", email);
             throw new EmailAlreadyExistException("User with email " + email + " is already exist.");
         } else {
-            log.debug("Remove old user email {} from set.}.", user.getEmail());
+            log.debug("Remove old user email {} from set.", user.getEmail());
             emailSet.remove(user.getEmail());
-            log.debug("Set user email to {}.", user.getEmail());
+            log.debug("Set user email to {}.", updateUser.getEmail());
             emailSet.add(email);
         }
 

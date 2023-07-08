@@ -28,10 +28,9 @@ public class ItemController {
     }
 
     @PatchMapping("{id}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long id, @RequestBody ItemDto itemDto) {
+    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long id, @RequestBody Item item) {
         log.info("Received request: path=/item/" + id + ", http-method=PATCH");
-        Item item = itemMapper.getItem(id, itemDto);
-        return itemMapper.getItemDto(itemService.updateItem(userId, item));
+        return itemMapper.getItemDto(itemService.updateItem(userId, id, item));
     }
 
     @GetMapping("{id}")

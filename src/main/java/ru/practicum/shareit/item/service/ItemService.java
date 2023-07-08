@@ -7,7 +7,7 @@ import java.util.Collection;
 
 public interface ItemService {
     Item addItem(long userId, Item item);
-    Item updateItem(long userId, Item item);
+    Item updateItem(long userId, long itemId, Item item);
     Item getItem(long itemId);
     Collection<Item> getUserItems(long userId);
     Collection<Item> getAllItems();
