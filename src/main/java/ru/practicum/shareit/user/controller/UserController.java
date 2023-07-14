@@ -1,8 +1,7 @@
 package ru.practicum.shareit.user.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -14,12 +13,12 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 @RestController
+@Slf4j
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
-    private final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @PostMapping
     public UserDto addUser(@Valid @RequestBody UserDto userDto) {

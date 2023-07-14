@@ -1,8 +1,6 @@
 package ru.practicum.shareit.user.storage.impl;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.exception.EmailAlreadyExistException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
@@ -12,15 +10,11 @@ import ru.practicum.shareit.user.storage.UserStorage;
 import java.util.*;
 
 @Repository
+@Slf4j
 public class UserStorageImpl implements UserStorage {
-    public final Logger log = (Logger) LoggerFactory.getLogger(UserStorageImpl.class);
     private final Map<Long, User> users = new HashMap<>();
     private final Set<String> emailSet = new HashSet<>();
     private long id = 0;
-
-    public UserStorageImpl() {
-        log.setLevel(Level.DEBUG);
-    }
 
     @Override
     public User addUser(User user) {
@@ -89,13 +83,8 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public void removeUser(long userId) {
-        if (!users.containsKey(userId)) {
-            log.warn("User with id={} not found", userId);
-            throw new UserNotFoundException("User with id " + userId + " not found.");
-        }
-        String email = users.get(userId).getEmail();
-        log.debug("Remove user email {} from set.", email);
-        emailSet.remove(email);
+        log.debug("Remove user email from set.");
+        emailSet.remove(users.get(userId).getEmail());
         log.info("Remove user with id={}", userId);
         users.remove(userId);
     }

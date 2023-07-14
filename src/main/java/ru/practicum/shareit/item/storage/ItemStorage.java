@@ -15,5 +15,7 @@ public interface ItemStorage {
 
     Collection<Item> getAllItems();
 
+    Collection<Item> searchItems(String text);
+
     void removeItem(long id);
 }

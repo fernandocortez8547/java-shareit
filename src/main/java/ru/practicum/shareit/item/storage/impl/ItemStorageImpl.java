@@ -1,32 +1,34 @@
 package ru.practicum.shareit.item.storage.impl;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.item.exception.IncorrectOwnerException;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
+@Slf4j
 public class ItemStorageImpl implements ItemStorage {
-    private final Logger log = (Logger) LoggerFactory.getLogger(ItemStorageImpl.class);
     private final Map<Long, Item> items = new HashMap<>();
+    private final Map<Long, List<Item>> userItems = new HashMap<>();
     private long id = 0;
-
-    public ItemStorageImpl() {
-        log.setLevel(Level.DEBUG);
-    }
 
     @Override
     public Item addItem(Item item) {
         item.setId(idGeneration());
+        long userId = item.getOwner();
+        log.info("Save to itemUsers with owner={}", userId);
+        if (userItems.containsKey(userId)) {
+            List<Item> userItemsValues = userItems.get(userId);
+            userItemsValues.add(item);
+            userItems.put(userId, userItemsValues);
+        } else {
+            userItems.put(userId, new ArrayList<>(List.of(item)));
+        }
         log.info("Save item with id={}.", item.getId());
         items.put(item.getId(), item);
         return item;
@@ -44,6 +46,7 @@ public class ItemStorageImpl implements ItemStorage {
         String description = updateItem.getDescription();
         Boolean available = updateItem.getAvailable();
         long owner = updateItem.getOwner();
+        log.debug("owner {}", owner);
         log.debug("available {}",available);
         updateItem.setId(itemId);
 
@@ -68,9 +71,13 @@ public class ItemStorageImpl implements ItemStorage {
             log.debug("Set item available to {}.", item.getAvailable());
             updateItem.setAvailable(item.getAvailable());
         }
+        log.debug("Over writing item {} in userItems.", item.getId());
+        List<Item> userItemsValues = userItems.get(owner);
+        userItemsValues.remove(item);
+        userItemsValues.add(updateItem);
+        userItems.put(owner, userItemsValues);
         log.info("Update item with id={}.", item.getId());
         items.put(updateItem.getId(), updateItem);
-
         return updateItem;
     }
 
@@ -87,7 +94,7 @@ public class ItemStorageImpl implements ItemStorage {
     @Override
     public Collection<Item> getUserItems(long owner) {
         log.info("Get all items with owner={}.", owner);
-        return items.values().stream().filter(item -> item.getOwner() == owner).collect(Collectors.toList());
+        return userItems.get(owner);
     }
 
     @Override
@@ -97,11 +104,25 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public void removeItem(long id) {
-        if (!items.containsKey(id)) {
-            log.warn("Item with id={} not found", id);
-            throw new ItemNotFoundException("Item with id " + id + " not found.");
+    public Collection<Item> searchItems(String text) {
+        if (text.isBlank()) {
+            return Collections.emptyList();
         }
+        log.info("Get items where name or description contains {}", text);
+        return items.values().stream()
+                .filter(item -> (item.getName().toLowerCase().contains(text)
+                        || item.getDescription().toLowerCase().contains(text))
+                        && item.getAvailable())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void removeItem(long id) {
+        log.debug("Remove item={} from userItem.", id);
+        Item item = items.get(id);
+        List<Item> userItemsValues = userItems.get(item.getOwner());
+        userItemsValues.remove(item);
+        userItems.put(item.getOwner(), userItemsValues);
         log.info("Remove item with id={}", id);
         items.remove(id);
     }
