@@ -22,13 +22,10 @@ public class ItemStorageImpl implements ItemStorage {
         item.setId(idGeneration());
         long userId = item.getOwner();
         log.info("Save to itemUsers with owner={}", userId);
-        if (userItems.containsKey(userId)) {
-            List<Item> userItemsValues = userItems.get(userId);
-            userItemsValues.add(item);
-            userItems.put(userId, userItemsValues);
-        } else {
-            userItems.put(userId, new ArrayList<>(List.of(item)));
-        }
+        userItems.computeIfPresent(userId, (k, v) -> {
+            v.add(item); return v;
+        });
+        userItems.putIfAbsent(userId, new ArrayList<>(List.of(item)));
         log.info("Save item with id={}.", item.getId());
         items.put(item.getId(), item);
         return item;
@@ -40,45 +37,28 @@ public class ItemStorageImpl implements ItemStorage {
             log.warn("Item with id={} not found", updateItem.getId());
             throw new ItemNotFoundException("Item with id " + id + " not found.");
         }
-
         Item item = items.get(itemId);
         String name = updateItem.getName();
         String description = updateItem.getDescription();
         Boolean available = updateItem.getAvailable();
         long owner = updateItem.getOwner();
-        log.debug("owner {}", owner);
-        log.debug("available {}",available);
-        updateItem.setId(itemId);
-
-        if (item.getOwner() != updateItem.getOwner()) {
-            log.debug("Set item owner id to {}.", item.getOwner());
-            if (owner == 0) {
-                updateItem.setOwner(item.getOwner());
-            } else {
-                log.warn("Attempt to change owner id on {}, instead of {}", owner, item.getId());
-                throw new IncorrectOwnerException("Owner can't be changed.");
-            }
+        if (owner != item.getOwner()) {
+            log.warn("Attempt to change owner id on {}, instead of {}", owner, item.getId());
+            throw new IncorrectOwnerException("Owner can't be changed.");
         }
-        if (name == null || name.isBlank()) {
-            log.debug("Set item name to {}.", item.getName());
-            updateItem.setName(item.getName());
+        if (name != null && !name.isBlank()) {
+            log.debug("Set item name to {}.", name);
+            item.setName(updateItem.getName());
         }
-        if (description == null || description.isBlank()) {
-            log.debug("Set item description to {}.", item.getDescription());
-            updateItem.setDescription(item.getDescription());
+        if (description != null && !description.isBlank()) {
+            log.debug("Set item description to {}.", description);
+            item.setDescription(description);
         }
-        if (available == null) {
-            log.debug("Set item available to {}.", item.getAvailable());
-            updateItem.setAvailable(item.getAvailable());
+        if (available != null) {
+            log.debug("Set item available to {}.", available);
+            item.setAvailable(available);
         }
-        log.debug("Over writing item {} in userItems.", item.getId());
-        List<Item> userItemsValues = userItems.get(owner);
-        userItemsValues.remove(item);
-        userItemsValues.add(updateItem);
-        userItems.put(owner, userItemsValues);
-        log.info("Update item with id={}.", item.getId());
-        items.put(updateItem.getId(), updateItem);
-        return updateItem;
+        return item;
     }
 
     @Override
@@ -108,7 +88,7 @@ public class ItemStorageImpl implements ItemStorage {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        log.info("Get items where name or description contains {}", text);
+        log.info("Get items where name or description contains {}.", text);
         return items.values().stream()
                 .filter(item -> (item.getName().toLowerCase().contains(text)
                         || item.getDescription().toLowerCase().contains(text))

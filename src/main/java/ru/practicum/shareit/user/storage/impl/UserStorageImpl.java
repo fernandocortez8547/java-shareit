@@ -40,29 +40,20 @@ public class UserStorageImpl implements UserStorage {
         User user = users.get(userId);
         String email = updateUser.getEmail();
         String name = updateUser.getName();
-        updateUser.setId(userId);
-
-        if (email == null || user.getEmail().equals(email)) {
-            log.debug("Set user email to {}.", user.getEmail());
-            updateUser.setEmail(user.getEmail());
-        } else if (emailSet.contains(email)) {
-            log.warn("User with email={} exist.", email);
-            throw new EmailAlreadyExistException("User with email " + email + " is already exist.");
-        } else {
-            log.debug("Remove old user email {} from set.", user.getEmail());
-            emailSet.remove(user.getEmail());
-            log.debug("Set user email to {}.", updateUser.getEmail());
-            emailSet.add(email);
-        }
-
-        if (name == null) {
+        if (name != null && !name.isBlank()) {
             log.debug("Set user name to {}.", user.getName());
-            updateUser.setName(user.getName());
+            user.setName(name);
         }
-
-        log.info("Update user with id={}.", user.getId());
-        users.put(userId, updateUser);
-        return updateUser;
+        if (email != null && !email.isBlank()) {
+            if (!user.getEmail().equals(email) && emailSet.contains(email)) {
+                throw new EmailAlreadyExistException("Email " + email + " is already exist.");
+            } else {
+                log.debug("Set email to {}", email);
+                emailSet.remove(user.getEmail());
+                user.setEmail(email);
+            }
+        }
+        return user;
     }
 
     @Override
