@@ -10,6 +10,19 @@ public class UserMapper {
         return new UserDto(user.getId(), user.getName(), user.getEmail());
     }
 
+    public User getUser(UserDto userDto, User user) {
+        String email = userDto.getEmail();
+        String name = userDto.getName();
+        if (name != null && !name.isBlank()) {
+            user.setName(name);
+        }
+        if (email != null && !email.isBlank()) {
+            user.setEmail(email);
+        }
+        return user;
+    }
+
+
     public User getUser(UserDto userDto) {
         User user = new User();
         user.setName(userDto.getName());

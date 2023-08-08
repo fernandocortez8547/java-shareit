@@ -10,7 +10,7 @@ import ru.practicum.shareit.item.exception.IncorrectOwnerException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Repository
+@Repository("ItemInMemoryStorage")
 @Slf4j
 public class ItemStorageImpl implements ItemStorage {
     private final Map<Long, Item> items = new HashMap<>();
@@ -85,9 +85,6 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public Collection<Item> searchItems(String text) {
-        if (text.isBlank()) {
-            return Collections.emptyList();
-        }
         log.info("Get items where name or description contains {}.", text);
         return items.values().stream()
                 .filter(item -> (item.getName().toLowerCase().contains(text)

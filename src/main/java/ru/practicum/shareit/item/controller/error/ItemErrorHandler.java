@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.shareit.item.exception.BadRequestException;
 import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.item.exception.IncorrectOwnerException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
@@ -16,6 +17,12 @@ public class ItemErrorHandler {
     @ExceptionHandler({IncorrectOwnerException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Map<String, String> incorrectDataHandler(final RuntimeException e) {
+        return Map.of("error", e.getMessage());
+    }
+
+    @ExceptionHandler({BadRequestException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> badRequestHandler(final RuntimeException e) {
         return Map.of("error", e.getMessage());
     }
 

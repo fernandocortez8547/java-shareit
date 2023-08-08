@@ -5,18 +5,16 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.exception.EmailAlreadyExistException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.*;
 
-@Repository
+@Repository("UserInMemoryStorage")
 @Slf4j
-public class UserStorageImpl implements UserStorage {
+public class UserStorageImpl {
     private final Map<Long, User> users = new HashMap<>();
     private final Set<String> emailSet = new HashSet<>();
     private long id = 0;
 
-    @Override
     public User addUser(User user) {
         if (emailSet.contains(user.getEmail())) {
             log.warn("User with email={} exist.", user.getEmail());
@@ -30,7 +28,6 @@ public class UserStorageImpl implements UserStorage {
         return user;
     }
 
-    @Override
     public User updateUser(long userId, User updateUser) {
         if (!users.containsKey(userId)) {
             log.warn("User with id={} not found", userId);
@@ -56,7 +53,6 @@ public class UserStorageImpl implements UserStorage {
         return user;
     }
 
-    @Override
     public User getUser(long userId) {
         if (!users.containsKey(userId)) {
             log.warn("User with id={} not found", userId);
@@ -66,13 +62,11 @@ public class UserStorageImpl implements UserStorage {
         return users.get(userId);
     }
 
-    @Override
     public Collection<User> getUsers() {
         log.info("Get all users.");
         return users.values();
     }
 
-    @Override
     public void removeUser(long userId) {
         log.debug("Remove user email from set.");
         emailSet.remove(users.get(userId).getEmail());
