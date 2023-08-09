@@ -9,7 +9,7 @@ import ru.practicum.shareit.item.exception.IncorrectOwnerException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Repository
+@Repository("ItemInMemoryStorage")
 @Slf4j
 public class ItemStorageImpl {
     private final Map<Long, Item> items = new HashMap<>();

@@ -20,10 +20,8 @@ public class Item {
     private String description;
     @Column(name = "status")
     private Boolean available;
-    @ManyToOne
-    @JoinColumn(name = "last_booking_id")
+    @Transient
     private Booking lastBooking;
-    @ManyToOne
-    @JoinColumn(name = "next_booking_id")
+    @Transient
     private Booking nextBooking;
 }
