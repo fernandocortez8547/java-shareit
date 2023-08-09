@@ -2,7 +2,7 @@ package ru.practicum.shareit.item.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.ItemBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -74,19 +74,19 @@ public class ItemMapper {
         return commentMapper.toCommentDto(comment);
     }
 
-    private BookingDto getNextBooking(Collection<Booking> bookings) {
+    private ItemBookingDto getNextBooking(Collection<Booking> bookings) {
         return bookings.stream()
                 .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
                 .min(Comparator.comparing(Booking::getStart))
-                .map(b -> new BookingDto(b.getId(), b.getBooker().getId()))
+                .map(b -> new ItemBookingDto(b.getId(), b.getBooker().getId()))
                 .orElse(null);
     }
 
-    private BookingDto getLastBooking(Collection<Booking> bookings) {
+    private ItemBookingDto getLastBooking(Collection<Booking> bookings) {
         return bookings.stream()
                 .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
                 .max(Comparator.comparing(Booking::getStart))
-                .map(b -> new BookingDto(b.getId(), b.getBooker().getId()))
+                .map(b -> new ItemBookingDto(b.getId(), b.getBooker().getId()))
                 .orElse(null);
     }
 }

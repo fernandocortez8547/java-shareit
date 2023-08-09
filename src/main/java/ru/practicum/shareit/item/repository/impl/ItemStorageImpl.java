@@ -1,10 +1,9 @@
-package ru.practicum.shareit.item.storage.impl;
+package ru.practicum.shareit.item.repository.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.item.exception.IncorrectOwnerException;
 
 import java.util.*;
@@ -12,12 +11,11 @@ import java.util.stream.Collectors;
 
 @Repository("ItemInMemoryStorage")
 @Slf4j
-public class ItemStorageImpl implements ItemStorage {
+public class ItemStorageImpl {
     private final Map<Long, Item> items = new HashMap<>();
     private final Map<Long, List<Item>> userItems = new HashMap<>();
     private long id = 0;
 
-    @Override
     public Item addItem(Item item) {
         item.setId(idGeneration());
         long userId = item.getOwner();
@@ -31,7 +29,6 @@ public class ItemStorageImpl implements ItemStorage {
         return item;
     }
 
-    @Override
     public Item updateItem(long itemId, Item updateItem) {
         if (!items.containsKey(itemId)) {
             log.warn("Item with id={} not found", updateItem.getId());
@@ -61,7 +58,6 @@ public class ItemStorageImpl implements ItemStorage {
         return item;
     }
 
-    @Override
     public Item getItem(long itemId) {
         if (!items.containsKey(itemId)) {
             log.warn("Item with id={} not found", itemId);
@@ -71,19 +67,16 @@ public class ItemStorageImpl implements ItemStorage {
         return items.get(itemId);
     }
 
-    @Override
     public Collection<Item> getUserItems(long owner) {
         log.info("Get all items with owner={}.", owner);
         return userItems.get(owner);
     }
 
-    @Override
     public Collection<Item> getAllItems() {
         log.info("Get all items.");
         return items.values();
     }
 
-    @Override
     public Collection<Item> searchItems(String text) {
         log.info("Get items where name or description contains {}.", text);
         return items.values().stream()
@@ -93,7 +86,6 @@ public class ItemStorageImpl implements ItemStorage {
                 .collect(Collectors.toList());
     }
 
-    @Override
     public void removeItem(long id) {
         log.debug("Remove item={} from userItem.", id);
         Item item = items.get(id);

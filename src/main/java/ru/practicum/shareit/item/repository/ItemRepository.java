@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.storage;
+package ru.practicum.shareit.item.repository;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,5 +13,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("select i from Item i where (lower(i.name) LIKE lower(CONCAT('%', ?1, '%'))" +
             " OR lower(i.description) LIKE lower(concat('%', ?1, '%'))) " +
             "AND i.available = true")
-    Collection<Item> findByNameOrDescriptionContainingIgnoreCase(String text);
+    Collection<Item> searchByNameOrDescription(String text);
 }

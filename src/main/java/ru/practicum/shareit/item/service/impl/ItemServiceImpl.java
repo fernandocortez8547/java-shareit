@@ -13,17 +13,16 @@ import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.CommentRepository;
-import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.item.repository.CommentRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.booking.BookingStatus.REJECTED;
+import static ru.practicum.shareit.booking.model.BookingStatus.REJECTED;
 
 @Service
 @Slf4j
@@ -63,10 +62,6 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new ItemNotFoundException("Item with id " + itemId + " not found."));
         Collection<Comment> comments = commentRepository.findAllByItemId(itemId);
         Collection<Booking> itemBookings = bookingRepository.findAllByItemIdAndItemOwnerAndStatusNot(itemId, userId, REJECTED);
-        if (userId != item.getOwner()) {
-            return itemMapper.getItemDto(item, itemBookings, comments);
-        }
-        log.info(itemBookings.toString());
         return itemMapper.getItemDto(item, itemBookings, comments);
     }
 
@@ -102,7 +97,7 @@ public class ItemServiceImpl implements ItemService {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemRepository.findByNameOrDescriptionContainingIgnoreCase(text).stream().map(itemMapper::getItemDto).collect(Collectors.toList());
+        return itemRepository.searchByNameOrDescription(text).stream().map(itemMapper::getItemDto).collect(Collectors.toList());
     }
 
     @Override
@@ -111,11 +106,8 @@ public class ItemServiceImpl implements ItemService {
         if (bookings.isEmpty()) {
             throw new BadRequestException("Bad request.");
         }
-        log.info(bookings.toString());
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ItemNotFoundException("Item not found."));
-        User user = userService.findUser(userId);
-        comment.setItem(item);
-        comment.setUser(user);
+        comment.setItem(itemRepository.findById(itemId).orElseThrow(() -> new ItemNotFoundException("Item not found.")));
+        comment.setUser(userService.findUser(userId));
         comment.setCreated(LocalDateTime.now());
         return itemMapper.getCommentDto(commentRepository.save(comment));
     }

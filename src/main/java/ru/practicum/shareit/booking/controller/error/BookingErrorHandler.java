@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.exception.BookingNotFoundException;
-import ru.practicum.shareit.booking.exception.UnauthorizedAccessException;
+import ru.practicum.shareit.booking.exception.AccessDeniedException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
@@ -28,7 +28,7 @@ public class BookingErrorHandler {
         return Map.of("error", e.getMessage());
     }
 
-    @ExceptionHandler({UnauthorizedAccessException.class, ConstraintViolationException.class})
+    @ExceptionHandler({AccessDeniedException.class, ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> badRequestHandler(final RuntimeException e) {
         return Map.of("error", e.getMessage());

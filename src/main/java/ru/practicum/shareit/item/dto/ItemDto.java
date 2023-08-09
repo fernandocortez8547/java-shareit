@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.ItemBookingDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -17,6 +17,6 @@ public class ItemDto {
     @NotNull(message = "Must be filled.")
     private final Boolean available;
     private Collection<CommentDto> comments;
-    private BookingDto lastBooking;
-    private BookingDto nextBooking;
+    private ItemBookingDto lastBooking;
+    private ItemBookingDto nextBooking;
 }
