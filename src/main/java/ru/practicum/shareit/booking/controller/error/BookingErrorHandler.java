@@ -25,7 +25,15 @@ public class BookingErrorHandler {
     @ExceptionHandler({ItemNotFoundException.class, UserNotFoundException.class, BookingNotFoundException.class, MethodArgumentTypeMismatchException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> notFoundHandler(final RuntimeException e) {
-        return Map.of("error", e.getMessage());
+        String msg = "";
+        if (e instanceof ItemNotFoundException) {
+            msg = "Item not found.";
+        } else if (e instanceof UserNotFoundException) {
+            msg = "User not found.";
+        } else {
+            msg = "Booking not found.";
+        }
+        return Map.of("error", msg);
     }
 
     @ExceptionHandler({AccessDeniedException.class, ConstraintViolationException.class})
@@ -34,9 +42,9 @@ public class BookingErrorHandler {
         return Map.of("error", e.getMessage());
     }
 
-    @ExceptionHandler({IllegalArgumentException.class})
+    @ExceptionHandler({IllegalStateException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> internalServerErrorHandler(final RuntimeException e) {
-        return Map.of("error", e.getMessage());
+        return Map.of("error", "Unknown state: UNSUPPORTED_STATUS");
     }
 }

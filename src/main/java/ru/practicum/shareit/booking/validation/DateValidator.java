@@ -1,19 +1,19 @@
 package ru.practicum.shareit.booking.validation;
 
-import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDateTime;
 
-public class DateValidator implements ConstraintValidator<DateTimeRange, Booking> {
+public class DateValidator implements ConstraintValidator<DateTimeRange, BookingRequestDto> {
 
     @Override
     public void initialize(DateTimeRange constraintAnnotation) {
     }
 
     @Override
-    public boolean isValid(Booking booking, ConstraintValidatorContext context) {
+    public boolean isValid(BookingRequestDto booking, ConstraintValidatorContext context) {
         LocalDateTime start = booking.getStart();
         LocalDateTime end = booking.getEnd();
         if (end == null || start == null) {

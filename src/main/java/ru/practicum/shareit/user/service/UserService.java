@@ -29,14 +29,12 @@ public class UserService {
     }
 
     public UserDto getUser(long id) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new UserNotFoundException("User with id " + id + " not found.")
-        );
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         return userMapper.getUserDto(user);
     }
 
     public User findUser(long id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User with id " + id + "not found."));
+        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
     }
 
     public Collection<UserDto> getUsers() {

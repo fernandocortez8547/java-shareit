@@ -21,6 +21,6 @@ public class UserErrorHandler {
     @ExceptionHandler({UserNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> notFoundHandler(final RuntimeException e) {
-        return Map.of("error", e.getMessage());
+        return Map.of("error", "User not found.");
     }
 }

@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking.model;
 
-import lombok.Data;
-import ru.practicum.shareit.booking.validation.DateTimeRange;
+import lombok.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -10,8 +9,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "bookings")
-@Data
-@DateTimeRange
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

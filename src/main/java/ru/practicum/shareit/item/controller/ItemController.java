@@ -42,10 +42,10 @@ public class ItemController {
     public Collection<ItemDto> getUserItem(@RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
         Collection<ItemDto> items;
         if (userId != null) {
-            log.info("Received request: path=/item, http-method=GET, X-Sharer-User-Id=" + userId);
+            log.info("Received request: path=/items, http-method=GET, X-Sharer-User-Id={}", userId);
             return itemService.getUserItemsWithBooking(userId);
         } else {
-            log.info("Received request: path=/item, http-method=GET");
+            log.info("Received request: path=/items, http-method=GET");
             items = itemService.getAllItems();
         }
 

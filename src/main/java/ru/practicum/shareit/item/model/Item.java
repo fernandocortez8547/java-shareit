@@ -1,19 +1,23 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.Data;
+import lombok.*;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "items")
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(name = "owner")
-    private long owner;
+    @ManyToOne
+    @JoinColumn(name = "owner")
+    private User owner;
     @Column(name = "name")
     private String name;
     @Column(name = "description")

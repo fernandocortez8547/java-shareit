@@ -16,6 +16,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
@@ -38,9 +39,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto addItem(long userId, ItemDto itemDto) {
-        userService.getUser(userId);
+        User user = userService.findUser(userId);
         Item item = itemMapper.getItem(userId, itemDto);
-        item.setOwner(userId);
+        item.setOwner(user);
         return itemMapper.getItemDto(itemRepository.save(item));
     }
 
@@ -48,10 +49,11 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto updateItem(long userId, long itemId, ItemDto itemDto) {
         Item item = itemRepository
                 .findById(itemId)
-                .orElseThrow(() -> new ItemNotFoundException("Item with id " + itemId + " not found."));
-        if (item.getOwner() != userId) {
+                .orElseThrow(ItemNotFoundException::new);
+        if (item.getOwner().getId() != userId) {
             throw new IncorrectOwnerException("Owner can't be changed.");
         }
+        item.setOwner(item.getOwner());
         item = itemMapper.getItem(itemDto, item);
         return itemMapper.getItemDto(itemRepository.save(item));
     }
@@ -59,17 +61,17 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto getItem(long userId, long itemId) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ItemNotFoundException("Item with id " + itemId + " not found."));
+                .orElseThrow(ItemNotFoundException::new);
         Collection<Comment> comments = commentRepository.findAllByItemId(itemId);
-        Collection<Booking> itemBookings = bookingRepository.findAllByItemIdAndItemOwnerAndStatusNot(itemId, userId, REJECTED);
+        Collection<Booking> itemBookings = bookingRepository.findAllByItemIdAndItemOwnerIdAndStatusNot(itemId, userId, REJECTED);
         return itemMapper.getItemDto(item, itemBookings, comments);
     }
 
     @Override
     public Collection<ItemDto> getUserItemsWithBooking(long userId) {
-        Collection<Item> items = itemRepository.findByOwner(userId);
-        Collection<Booking> bookings = bookingRepository.findAllByItemOwner(userId);
-        Collection<Comment> comments = commentRepository.findAllByUserIdOrItemOwner(userId, userId);
+        Collection<Item> items = itemRepository.findByOwnerId(userId);
+        Collection<Booking> bookings = bookingRepository.findAllByItemOwnerId(userId);
+        Collection<Comment> comments = commentRepository.findAllByUserIdOrItemOwnerId(userId, userId);
         Map<Item, List<Booking>> bookingsByOwner = bookings.stream()
                 .collect(Collectors.groupingBy(
                         Booking::getItem,
@@ -106,7 +108,7 @@ public class ItemServiceImpl implements ItemService {
         if (bookings.isEmpty()) {
             throw new BadRequestException("Bad request.");
         }
-        comment.setItem(itemRepository.findById(itemId).orElseThrow(() -> new ItemNotFoundException("Item not found.")));
+        comment.setItem(itemRepository.findById(itemId).orElseThrow(ItemNotFoundException::new));
         comment.setUser(userService.findUser(userId));
         comment.setCreated(LocalDateTime.now());
         return itemMapper.getCommentDto(commentRepository.save(comment));

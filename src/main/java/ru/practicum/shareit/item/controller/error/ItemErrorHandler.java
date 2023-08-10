@@ -17,7 +17,7 @@ public class ItemErrorHandler {
     @ExceptionHandler({IncorrectOwnerException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Map<String, String> incorrectDataHandler(final RuntimeException e) {
-        return Map.of("error", e.getMessage());
+        return Map.of("error", "Item not found.");
     }
 
     @ExceptionHandler({BadRequestException.class})
@@ -29,6 +29,12 @@ public class ItemErrorHandler {
     @ExceptionHandler({ItemNotFoundException.class, UserNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> notFoundHandler(final RuntimeException e) {
-        return Map.of("error", e.getMessage());
+        String msg = "";
+        if (e instanceof ItemNotFoundException) {
+            msg = "Item not found.";
+        } else if (e instanceof UserNotFoundException) {
+            msg = "User not found.";
+        }
+        return Map.of("error", msg);
     }
 }
