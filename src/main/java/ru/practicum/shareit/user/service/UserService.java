@@ -1,17 +1,50 @@
 package ru.practicum.shareit.user.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.exception.UserNotFoundException;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
-public interface UserService {
-    User addUser(User user);
+@Service
+@RequiredArgsConstructor
+public class UserService {
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    User updateUser(long userId, User user);
+    public UserDto addUser(UserDto userDto) {
+        User user = userMapper.getUser(userDto);
+        return userMapper.getUserDto(userRepository.save(user));
+    }
 
-    User getUser(long id);
+    public UserDto updateUser(long userId, UserDto userDto) {
+        User user = userRepository.findById(userId).orElseThrow();
+        user = userMapper.getUser(userDto, user);
+        return userMapper.getUserDto(userRepository.save(user));
+    }
 
-    Collection<User> getUsers();
+    public UserDto getUser(long id) {
+        User user = userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        return userMapper.getUserDto(user);
+    }
 
-    void removeUser(long id);
+    public User findUser(long id) {
+        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+    }
+
+    public Collection<UserDto> getUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::getUserDto)
+                .collect(Collectors.toList());
+    }
+
+    public void removeUser(long id) {
+        userRepository.deleteById(id);
+    }
 }
